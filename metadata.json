@@ -1,0 +1,7 @@
+{
+  "name": "Canberra Terroir",
+  "description": "An interactive, stylized map of the Canberra District wine region.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
