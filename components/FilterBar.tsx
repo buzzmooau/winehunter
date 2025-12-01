@@ -8,6 +8,7 @@ interface FilterBarProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
   onClearFilters: () => void;
+  onSearchSubmit: () => void; // New prop
 }
 
 export const FilterBar: React.FC<FilterBarProps> = ({
@@ -16,7 +17,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onToggleVariety,
   searchTerm,
   onSearchChange,
-  onClearFilters
+  onClearFilters,
+  onSearchSubmit
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -32,6 +34,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+          onSearchSubmit();
+      }
+  };
+
   return (
     <div className="flex flex-col sm:flex-row gap-3 py-2 animate-fade-in z-20">
       {/* Search Input */}
@@ -43,7 +51,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           type="text"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search wineries or locations..."
+          onKeyDown={handleKeyDown}
+          placeholder="Search wineries OR 'Shiraz under $40'..."
           className="block w-full pl-10 pr-3 py-2 border border-wine-100 rounded-lg leading-5 bg-white placeholder-wine-300 focus:outline-none focus:ring-1 focus:ring-wine-500 focus:border-wine-500 sm:text-sm shadow-sm transition-all"
         />
         {searchTerm && (
