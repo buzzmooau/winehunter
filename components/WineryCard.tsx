@@ -17,7 +17,8 @@ export const WineryCard: React.FC<WineryCardProps> = ({ winery, onClose }) => {
     setLoading(true);
     setWineList(null);
     
-    searchWinesForSale(winery.name).then(data => {
+    // Updated: Passing the specific shopUrl along with the name
+    searchWinesForSale(winery.name, winery.shopUrl).then(data => {
       if (active) {
         setWineList(data);
         setLoading(false);
@@ -25,7 +26,7 @@ export const WineryCard: React.FC<WineryCardProps> = ({ winery, onClose }) => {
     });
     
     return () => { active = false; };
-  }, [winery.id, winery.name]);
+  }, [winery.id, winery.name, winery.shopUrl]);
 
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-lg border border-wine-100 flex flex-col h-full animate-fade-in">
