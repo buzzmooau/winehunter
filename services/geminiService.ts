@@ -59,47 +59,16 @@ export interface WineSearchResponse {
 
 export const searchWinesForSale = async (wineryName: string, shopUrl?: string): Promise<WineSearchResponse> => {
   try {
-    // Specific instruction for problematic sites to ensure correct shop URL is used
     let specificInstruction = "";
-    const lowerName = wineryName.toLowerCase();
     
-    if (lowerName.includes("eden road")) {
-        specificInstruction = `IMPORTANT: For Eden Road Wines, you MUST start your search at https://edenroadwines.com.au/pages/shop. 
-        Extract wines listed on that specific page. The deep links should likely look like https://edenroadwines.com.au/products/... 
-        If specific product links are unsure or hidden, default to https://edenroadwines.com.au/pages/shop.`;
-    } else if (lowerName.includes("collector wines")) {
-        specificInstruction = `IMPORTANT: For Collector Wines, you MUST start your search at https://collectorwines.com.au/collections/explore-our-range. 
-        Extract wines listed on that specific page. 
-        If specific product links are unsure or hidden, default to https://collectorwines.com.au/collections/explore-our-range.`;
-    } else if (lowerName.includes("mount majura")) {
-        specificInstruction = `IMPORTANT: For Mount Majura Vineyard, you MUST start your search at https://www.mountmajura.com.au/wines/current-releases/.
-        Extract wines listed on that specific page.
-        If specific product links are unsure or hidden, default to https://www.mountmajura.com.au/wines/current-releases/.`;
-    } else if (lowerName.includes("contentious character")) {
-        specificInstruction = `IMPORTANT: For Contentious Character, you MUST start your search at https://www.contentiouscharacter.com.au/Wines.
-        Extract wines listed on that specific page.
-        If specific product links are unsure or hidden, default to https://www.contentiouscharacter.com.au/Wines.`;
-    } else if (lowerName.includes("dionysus winery")) {
-        specificInstruction = `IMPORTANT: For Dionysus Winery, you MUST start your search at https://www.dionysus-winery.com.au/category/all-products.
-        Extract wines listed on that specific page.
-        If specific product links are unsure or hidden, default to https://www.dionysus-winery.com.au/category/all-products.`;
-    } else if (lowerName.includes("pankhurst wines")) {
-        specificInstruction = `IMPORTANT: For Pankhurst Wines, you MUST start your search at https://pankhurstwines.com.au/shop-2/.
-        Extract wines listed on that specific page.
-        If specific product links are unsure or hidden, default to https://pankhurstwines.com.au/shop-2/.`;
-    } else if (lowerName.includes("the vintner's daughter") || lowerName.includes("vintners daughter")) {
-        specificInstruction = `IMPORTANT: For The Vintner's Daughter, you MUST start your search at https://thevintnersdaughter.com.au/shop/.
-        Extract wines listed on that specific page.
-        If specific product links are unsure or hidden, default to https://thevintnersdaughter.com.au/shop/.`;
-    } else if (lowerName.includes("mckellar ridge")) {
-        specificInstruction = `IMPORTANT: For McKellar Ridge Wines, you MUST start your search at https://www.mckellarridgewines.com.au/buy/wine.
-        Extract wines listed on that specific page.
-        If specific product links are unsure or hidden, default to https://www.mckellarridgewines.com.au/buy/wine.`;
-    } else if (shopUrl) {
-        // Generic fallback instruction if a known shop URL is passed from constants
+    // If we have a verified shop URL, guide the model to use it explicitly.
+    if (shopUrl) {
         specificInstruction = `IMPORTANT: Start your search at the official shop page: ${shopUrl}. 
         Prioritize extracting wines visible on this page. 
-        If direct product links are not clearly available, use ${shopUrl} as the link.`;
+        If direct product links are not clearly available or likely to 404, use ${shopUrl} as the link.`;
+    } else {
+        // Fallback if no shopUrl is provided in constants
+        specificInstruction = `Search for the official "Shop" or "Buy Wines" page for ${wineryName}.`;
     }
 
     const response = await ai.models.generateContent({
@@ -113,7 +82,6 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string): 
       - Double check the links. Ensure they do not give a 404 error.
       - If a direct link to a specific vintage page (e.g., /2021-shiraz) is likely to be broken, outdated, or result in a 404, YOU MUST provide the URL to the winery's main "Shop", "Our Wines", or "Current Vintages" page instead.
       - It is significantly better to link to a working general store page than a broken specific product page.
-      - Review the site structure to find the URL to the sales page that works.
       
       Format each entry on a new line strictly following this pattern:
       Wine Name | Price | URL
