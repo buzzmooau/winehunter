@@ -11,6 +11,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 30, y: 25 },
     address: '3 Crisps Lane, Murrumbateman NSW',
     website: 'https://clonakilla.com.au/wines/',
+    shopUrl: 'https://clonakilla.com.au/wines/',
     image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -22,6 +23,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 25, y: 32 },
     address: '19 Butts Rd, Murrumbateman NSW',
     website: 'https://www.helmwines.com.au/shopnew/',
+    shopUrl: 'https://www.helmwines.com.au/shopnew/',
     image: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -33,6 +35,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 35, y: 20 },
     address: '9 Patemans Ln, Murrumbateman NSW',
     website: 'https://www.fourwindsvineyard.com.au/our-wines/',
+    shopUrl: 'https://www.fourwindsvineyard.com.au/our-wines/',
     image: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -44,6 +47,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 32, y: 38 },
     address: '3182 Barton Hwy, Murrumbateman NSW',
     website: 'https://edenroadwines.com.au/collections/all',
+    shopUrl: 'https://edenroadwines.com.au/pages/shop',
     image: 'https://images.unsplash.com/photo-1596130420485-6147985f92d4?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -55,6 +59,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 28, y: 22 },
     address: '34 Isabel Drive, Murrumbateman NSW',
     website: 'https://shawwines.com.au/wines/',
+    shopUrl: 'https://shawwines.com.au/wines/',
     image: 'https://images.unsplash.com/photo-1464638681273-0962e9b53566?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -66,6 +71,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 20, y: 28 },
     address: '2770 Dog Trap Rd, Murrumbateman NSW',
     website: 'https://www.gallagherwines.com.au/index.php?wines',
+    shopUrl: 'https://gallagherwines.com.au/index.php?wines',
     image: 'https://images.unsplash.com/photo-1559563362-c667ba5f5480?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -77,6 +83,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 22, y: 35 },
     address: '1 Patemans Ln, Murrumbateman NSW',
     website: 'https://www.dionysus-winery.com.au/category/all-products',
+    shopUrl: 'https://www.dionysus-winery.com.au/category/all-products',
     image: 'https://images.unsplash.com/photo-1597916829826-02e5bb4a54e0?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -88,6 +95,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 26, y: 29 },
     address: '5 Crisps Ln, Murrumbateman NSW',
     website: 'https://thevintnersdaughter.com.au/shop/',
+    shopUrl: 'https://thevintnersdaughter.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1528823872051-402f0190533d?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -99,6 +107,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 29, y: 33 },
     address: '3180 Barton Hwy, Murrumbateman NSW',
     website: 'https://wimbaliri.com.au/wines/',
+    shopUrl: 'https://wimbaliri.com.au/wines/',
     image: 'https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -110,6 +119,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 24, y: 39 },
     address: '122 Bluebell Ln, Murrumbateman NSW',
     website: 'https://www.jeircreekwines.com.au/collections/all-wines',
+    shopUrl: 'https://www.jeircreekwines.com.au/collections/all-wines',
     image: 'https://images.unsplash.com/photo-1572569997486-89659ce53186?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -121,6 +131,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 32, y: 30 },
     address: '2 Euroka Ave, Murrumbateman NSW',
     website: 'https://www.mckellarridgewines.com.au/buy/wine',
+    shopUrl: 'https://www.mckellarridgewines.com.au/buy/wine',
     image: 'https://images.unsplash.com/photo-1565597984483-7d885685514b?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -132,6 +143,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 30, y: 20 },
     address: '131 McIntosh Cct, Murrumbateman NSW',
     website: 'https://murrumbatemanwinery.com.au/wines-list/',
+    shopUrl: 'https://murrumbatemanwinery.com.au/wines-list/',
     image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -143,6 +155,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 28, y: 15 },
     address: '161 Long Rail Gully Rd, Murrumbateman NSW',
     website: 'https://www.longrailgully.com.au/shop',
+    shopUrl: 'https://www.longrailgully.com.au/shop',
     image: 'https://images.unsplash.com/photo-1534234828563-02511c759536?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -154,6 +167,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 36, y: 35 },
     address: '2307 Barton Hwy, Murrumbateman NSW',
     website: 'https://www.bartonestate.com.au/shop/',
+    shopUrl: 'https://www.bartonestate.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?auto=format&fit=crop&q=80&w=800'
   },
    {
@@ -165,6 +179,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 18, y: 25 },
     address: '440 Greenwood Rd, Murrumbateman NSW',
     website: 'https://www.yarrhwines.com.au/shop/',
+    shopUrl: 'https://www.yarrhwines.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1471189601863-78c5c3779e60?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -176,6 +191,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 33, y: 36 },
     address: 'Barton Hwy, Murrumbateman NSW',
     website: 'https://quarryhill.com.au/wines/',
+    shopUrl: 'https://quarryhill.com.au/wines/',
     image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -187,6 +203,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 29, y: 37 },
     address: 'Murrumbateman NSW',
     website: 'https://intrepiduswines.com.au/page-zl3ShP',
+    shopUrl: 'https://intrepiduswines.com.au/page-zl3ShP',
     image: 'https://images.unsplash.com/photo-1505567745926-ba89000d255a?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -198,6 +215,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 31, y: 27 },
     address: 'Murrumbateman NSW',
     website: 'https://www.ravensworthwines.com.au/collections/all',
+    shopUrl: 'https://www.ravensworthwines.com.au/collections/all',
     image: 'https://images.unsplash.com/photo-1529124230810-72c2194b8e21?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -209,6 +227,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 38, y: 40 },
     address: '1207 Nanima Rd, Murrumbateman NSW',
     website: 'https://www.vineyard1207.com.au/',
+    shopUrl: 'https://www.vineyard1207.com.au/',
     image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&q=80&w=800'
   },
 
@@ -223,6 +242,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 45, y: 55 },
     address: '156 Woodhill Dr, Wallaroo NSW',
     website: 'https://www.brindabellahills.com.au/shop/',
+    shopUrl: 'https://www.brindabellahills.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1563812709230-0eb537ba6a9e?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -234,6 +254,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 42, y: 58 },
     address: '215 Brooklands Rd, Wallaroo NSW',
     website: 'https://www.surveyorshill.com.au/buy-wine/',
+    shopUrl: 'https://www.surveyorshill.com.au/buy-wine/',
     image: 'https://images.unsplash.com/photo-1568283084903-82559384742e?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -245,6 +266,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 44, y: 52 },
     address: '196 Brooklands Rd, Wallaroo NSW',
     website: 'https://www.wallaroowines.com.au/wines',
+    shopUrl: 'https://www.wallaroowines.com.au/wines',
     image: 'https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -256,6 +278,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 46, y: 50 },
     address: '1496 Wallaroo Rd, Wallaroo NSW',
     website: 'https://nickolearywines.com.au/collections/all',
+    shopUrl: 'https://nickolearywines.com.au/collections/all',
     image: 'https://images.unsplash.com/photo-1599380753086-6469792040d9?auto=format&fit=crop&q=80&w=800'
   },
    {
@@ -266,7 +289,8 @@ export const WINERIES: Winery[] = [
     varieties: ['Shiraz', 'Riesling', 'Merlot'],
     coordinates: { x: 48, y: 56 },
     address: '13 Gladstone St, Hall ACT',
-    website: 'https://www.capitalwines.com.au/visit-us',
+    website: 'https://capitalwines.com.au/pages/shop',
+    shopUrl: 'https://capitalwines.com.au/pages/shop',
     image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=800'
   },
    {
@@ -277,7 +301,8 @@ export const WINERIES: Winery[] = [
     varieties: ['Shiraz', 'Merlot', 'Tempranillo'],
     coordinates: { x: 49, y: 54 },
     address: 'Hall ACT',
-    website: 'https://www.capitalwines.com.au/',
+    website: 'https://capitalwines.com.au/',
+    shopUrl: 'https://capitalwines.com.au/',
     image: 'https://images.unsplash.com/photo-1566938992015-77353f09d846?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -289,6 +314,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 40, y: 53 },
     address: 'Old Woodgrove, Wallaroo NSW',
     website: 'https://pankhurstwines.com.au/shop-2/',
+    shopUrl: 'https://pankhurstwines.com.au/shop-2/',
     image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -300,6 +326,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 43, y: 48 },
     address: '431 Nanima Rd, Springrange NSW',
     website: 'https://poacherspantry.com.au/shop/',
+    shopUrl: 'https://poacherspantry.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1557997380-6ad22e6b01b6?auto=format&fit=crop&q=80&w=800'
   },
 
@@ -312,7 +339,8 @@ export const WINERIES: Winery[] = [
     varieties: ['Semillon', 'Shiraz', 'Riesling'],
     coordinates: { x: 60, y: 18 },
     address: 'Cork St, Gundaroo NSW',
-    website: 'https://gundogestate.com.au/shop-wines/',
+    website: 'https://gundogestate.com.au/shop/',
+    shopUrl: 'https://gundogestate.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -324,6 +352,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 62, y: 22 },
     address: '170 Gundaroo Rd, Gundaroo NSW',
     website: 'https://tallagandahill.com.au/shop/',
+    shopUrl: 'https://tallagandahill.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?auto=format&fit=crop&q=80&w=800'
   },
 
@@ -337,6 +366,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 50, y: 8 },
     address: 'Murray St, Collector NSW',
     website: 'https://collectorwines.com.au/collections/explore-our-range',
+    shopUrl: 'https://collectorwines.com.au/collections/explore-our-range',
     image: 'https://images.unsplash.com/photo-1528823872051-402f0190533d?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -348,6 +378,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 25, y: 12 },
     address: '517 Dog Trap Rd, Yass NSW',
     website: 'https://www.mallaluka.com.au/our-wines-1',
+    shopUrl: 'https://www.mallaluka.com.au/our-wines-1',
     image: 'https://images.unsplash.com/photo-1596130420485-6147985f92d4?auto=format&fit=crop&q=80&w=800'
   },
 
@@ -360,7 +391,8 @@ export const WINERIES: Winery[] = [
     varieties: ['Pinot Noir', 'Chardonnay', 'Rose'],
     coordinates: { x: 80, y: 35 },
     address: 'Federal Hwy, Lake George NSW',
-    website: 'https://www.lakegeorgewinery.com.au/shop',
+    website: 'https://www.lakegeorgewinery.com.au/store',
+    shopUrl: 'https://www.lakegeorgewinery.com.au/store',
     image: 'https://images.unsplash.com/photo-1504279577054-acfeccf8fc52?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -371,7 +403,8 @@ export const WINERIES: Winery[] = [
     varieties: ['Pinot Noir', 'Shiraz Viognier'],
     coordinates: { x: 82, y: 42 },
     address: 'Federal Hwy, Lake George NSW',
-    website: 'https://www.leridaestate.com.au/collections/all',
+    website: 'https://leridaestate.com.au/shop/',
+    shopUrl: 'https://leridaestate.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1464638681273-0962e9b53566?auto=format&fit=crop&q=80&w=800'
   },
 
@@ -385,6 +418,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 70, y: 75 },
     address: '31 Joe Rocks Rd, Bungendore NSW',
     website: 'https://larkhill.wine/shop',
+    shopUrl: 'https://larkhill.wine/shop',
     image: 'https://images.unsplash.com/photo-1505567745926-ba89000d255a?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -396,6 +430,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 75, y: 65 },
     address: '810 Norton Rd, Wamboin NSW',
     website: 'https://www.contentiouscharacter.com.au/Wines',
+    shopUrl: 'https://www.contentiouscharacter.com.au/Wines',
     image: 'https://images.unsplash.com/photo-1559563362-c667ba5f5480?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -407,6 +442,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 72, y: 68 },
     address: '344 Norton Rd, Wamboin NSW',
     website: 'https://nortonroadwines.com.au/shop/',
+    shopUrl: 'https://nortonroadwines.com.au/shop/',
     image: 'https://images.unsplash.com/photo-1599380753086-6469792040d9?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -418,6 +454,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 68, y: 60 },
     address: 'Summerhill Rd, Bywong NSW',
     website: 'http://www.summerhillroad.com.au/',
+    shopUrl: 'http://www.summerhillroad.com.au/',
     image: 'https://images.unsplash.com/photo-1534234828563-02511c759536?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -429,6 +466,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 88, y: 50 },
     address: 'Tarago NSW',
     website: 'https://www.corangestate.com.au/wines/',
+    shopUrl: 'https://www.corangestate.com.au/wines/',
     image: 'https://images.unsplash.com/photo-1471189601863-78c5c3779e60?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -440,6 +478,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 65, y: 72 },
     address: 'Bungendore NSW',
     website: 'https://www.saplingyard.com.au/shop',
+    shopUrl: 'https://www.saplingyard.com.au/shop',
     image: 'https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -451,6 +490,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 85, y: 55 },
     address: 'Nerriga NSW',
     website: 'https://sassafraswines.com.au/shop',
+    shopUrl: 'https://sassafraswines.com.au/shop',
     image: 'https://images.unsplash.com/photo-1563812709230-0eb537ba6a9e?auto=format&fit=crop&q=80&w=800'
   },
 
@@ -463,7 +503,8 @@ export const WINERIES: Winery[] = [
     varieties: ['Tempranillo', 'Riesling', 'Graciano'],
     coordinates: { x: 55, y: 65 },
     address: '88 Lime Kiln Rd, Majura ACT',
-    website: 'https://www.mountmajura.com.au/wines/',
+    website: 'https://www.mountmajura.com.au/wines/current-releases/',
+    shopUrl: 'https://www.mountmajura.com.au/wines/current-releases/',
     image: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&q=80&w=800'
   }
 ];
