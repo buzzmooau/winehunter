@@ -8,6 +8,7 @@ export interface Winery {
   address: string;
   phone?: string;
   website?: string;
+  shopUrl?: string; // New field for the "Golden Source" shop link
   image: string; // Placeholder URL
 }
 
