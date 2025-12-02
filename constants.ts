@@ -11,7 +11,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 30, y: 25 },
     address: '3 Crisps Lane, Murrumbateman NSW',
     website: 'https://clonakilla.com.au/wines/',
-    shopUrl: 'https://clonakilla.com.au/wines/',
+    shopUrl: 'https://clonakilla.com.au/collections/wines',
     image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -71,7 +71,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 20, y: 28 },
     address: '2770 Dog Trap Rd, Murrumbateman NSW',
     website: 'https://www.gallagherwines.com.au/index.php?wines',
-    shopUrl: 'https://gallagherwines.com.au/index.php?wines',
+    shopUrl: 'https://www.gallagherwines.com.au/index.php?wines',
     image: 'https://images.unsplash.com/photo-1559563362-c667ba5f5480?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -107,7 +107,7 @@ export const WINERIES: Winery[] = [
     coordinates: { x: 29, y: 33 },
     address: '3180 Barton Hwy, Murrumbateman NSW',
     website: 'https://wimbaliri.com.au/wines/',
-    shopUrl: 'https://wimbaliri.com.au/wines/',
+    shopUrl: 'https://wimbaliri.com.au/',
     image: 'https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?auto=format&fit=crop&q=80&w=800'
   },
   {
@@ -289,8 +289,8 @@ export const WINERIES: Winery[] = [
     varieties: ['Shiraz', 'Riesling', 'Merlot'],
     coordinates: { x: 48, y: 56 },
     address: '13 Gladstone St, Hall ACT',
-    website: 'https://capitalwines.com.au/pages/shop',
-    shopUrl: 'https://capitalwines.com.au/pages/shop',
+    website: 'https://www.capitalwines.com.au/wines',
+    shopUrl: 'https://www.capitalwines.com.au/wines',
     image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=800'
   },
    {

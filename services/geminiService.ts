@@ -1,5 +1,5 @@
-import { GoogleGenAI, Chat, GenerateContentResponse, FunctionDeclaration, Type, FunctionCallingConfigMode } from "@google/genai";
-import { INITIAL_INSTRUCTION, WINERIES } from '../constants'; // Import WINERIES for the search logic
+import { GoogleGenAI, Chat, GenerateContentResponse, FunctionDeclaration, Type, Schema } from "@google/genai";
+import { INITIAL_INSTRUCTION, WINERIES } from '../constants';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const modelName = 'gemini-2.5-flash';
@@ -41,30 +41,26 @@ export const createSommelierSession = (): ChatSession => {
     config: {
       systemInstruction: INITIAL_INSTRUCTION,
       temperature: 0.7,
-      tools: [{ functionDeclarations: [wineSearchTool] }], // Register the tool
+      tools: [{ functionDeclarations: [wineSearchTool] }],
     },
   });
 
   return {
     sendMessage: async (text: string): Promise<string> => {
       try {
-        // 1. Send user message
         let response = await chat.sendMessage({ message: text });
         let responseText = response.text || "";
 
-        // 2. Check for Tool Calls (Function Calling)
+        // Check for Tool Calls
         const functionCalls = response.candidates?.[0]?.content?.parts?.filter(p => p.functionCall);
 
         if (functionCalls && functionCalls.length > 0) {
            const call = functionCalls[0].functionCall;
-           
            if (call && call.name === "find_wines_by_criteria") {
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                const { variety, maxPrice, district } = call.args as any;
-               
-               // execute the client-side logic
                const results = await executeCrossWinerySearch(variety, maxPrice, district);
                
-               // 3. Send Tool Response back to model
                const toolResponse = await chat.sendMessage({
                    message: [
                        {
@@ -75,11 +71,9 @@ export const createSommelierSession = (): ChatSession => {
                        }
                    ]
                });
-               
                return toolResponse.text || "I found some wines, but I'm having trouble summarizing them.";
            }
         }
-
         return responseText;
       } catch (error) {
         console.error("Gemini API Error:", error);
@@ -89,84 +83,80 @@ export const createSommelierSession = (): ChatSession => {
   };
 };
 
-// --- Helper Functions ---
+// --- Smart Search (Natural Language to Structured Search) ---
 
-// Exported for use in App.tsx Smart Search
-export const smartWineSearch = async (query: string): Promise<{ searchedWineries: string[], matches: any[] }> => {
+export const smartWineSearch = async (query: string) => {
     try {
-        // Use Gemini to parse the natural language query into tool arguments
-        const response = await ai.models.generateContent({
+        // 1. Parse natural language query into structured criteria
+        const parsingResponse = await ai.models.generateContent({
             model: modelName,
-            contents: `The user is searching for wine. Extract the criteria from this query: "${query}". 
-            If the query implies a price limit (e.g. "under $40"), set maxPrice.
-            Call the find_wines_by_criteria function.`,
+            contents: `Analyze this wine search query: "${query}". 
+            Extract the grape variety (e.g. Shiraz, Riesling), maximum price (if mentioned), and district (if mentioned).
+            Return a JSON object with keys: variety (string, required, infer if implied), maxPrice (number, optional), district (string, optional).
+            If no variety is mentioned, default to "Any".`,
             config: {
-                tools: [{ functionDeclarations: [wineSearchTool] }],
-                toolConfig: { functionCallingConfig: { mode: FunctionCallingConfigMode.ANY } } // Force tool use if possible
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        variety: { type: Type.STRING },
+                        maxPrice: { type: Type.NUMBER },
+                        district: { type: Type.STRING }
+                    }
+                }
             }
         });
 
-        const functionCalls = response.candidates?.[0]?.content?.parts?.filter(p => p.functionCall);
+        const criteria = JSON.parse(parsingResponse.text || "{}");
+        const variety = criteria.variety || "Any";
+        const maxPrice = criteria.maxPrice;
+        const district = criteria.district;
 
-        if (functionCalls && functionCalls.length > 0) {
-            const call = functionCalls[0].functionCall;
-            if (call && call.name === "find_wines_by_criteria") {
-                 const { variety, maxPrice, district } = call.args as any;
-                 console.log(`Smart Search Criteria: Variety=${variety}, Price=${maxPrice}, District=${district}`);
-                 return await executeCrossWinerySearch(variety, maxPrice, district);
-            }
-        }
-
-        // Fallback if no tool called (maybe query wasn't specific enough)
-        // If simply a variety name, try to run search directly
-        const cleanQuery = query.toLowerCase().replace(/wine|under|below|\$/g, '').trim();
-        const possibleVariety = WINERIES.flatMap(w => w.varieties).find(v => cleanQuery.includes(v.toLowerCase()));
-        
-        if (possibleVariety) {
-             return await executeCrossWinerySearch(possibleVariety);
-        }
-
-        return { searchedWineries: [], matches: [] };
+        // 2. Execute Search
+        return await executeCrossWinerySearch(variety, maxPrice, district);
 
     } catch (e) {
-        console.error("Smart Search Error", e);
+        console.error("Smart search failed", e);
         return { searchedWineries: [], matches: [] };
     }
 };
 
-const executeCrossWinerySearch = async (variety: string, maxPrice?: number, district?: string) => {
-    // 1. Identify candidates from static data
-    let candidates = WINERIES.filter(w => 
-        w.varieties.some(v => v.toLowerCase().includes(variety.toLowerCase()))
-    );
 
+// --- Helper Functions ---
+
+const executeCrossWinerySearch = async (variety: string, maxPrice?: number, district?: string) => {
+    let candidates = WINERIES;
+
+    // Filter by Variety (if specific)
+    if (variety && variety.toLowerCase() !== 'any') {
+        candidates = candidates.filter(w => 
+            w.varieties.some(v => v.toLowerCase().includes(variety.toLowerCase()))
+        );
+    }
+
+    // Filter by District
     if (district) {
         candidates = candidates.filter(w => w.district.toLowerCase() === district.toLowerCase());
     }
 
-    // 2. Randomly select up to 4 wineries to search (increased from 3 for better results)
-    const selectedWineries = candidates.sort(() => 0.5 - Math.random()).slice(0, 4);
+    // Select up to 3 wineries to manage latency
+    const selectedWineries = candidates.sort(() => 0.5 - Math.random()).slice(0, 3);
 
     if (selectedWineries.length === 0) return { searchedWineries: [], matches: [] };
 
-    // 3. Parallel Search
-    // Pass the variety to searchWinesForSale to ensure the LLM filters results
+    // Pass the specific variety filter to the individual winery search to get relevant results
     const searchPromises = selectedWineries.map(w => searchWinesForSale(w.name, w.shopUrl, variety));
     const results = await Promise.all(searchPromises);
 
-    // 4. Aggregate & Filter
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let allWines: any[] = [];
     results.forEach((res, index) => {
-        const winery = selectedWineries[index];
+        const wineryName = selectedWineries[index].name;
         res.wines.forEach(wine => {
-            // Clean price for comparison
             const priceVal = parseFloat(wine.price.replace(/[^0-9.]/g, ''));
-            
-            // Check price filter
             if (!maxPrice || (!isNaN(priceVal) && priceVal <= maxPrice)) {
                 allWines.push({
-                    wineryName: winery.name,
-                    wineryId: winery.id,
+                    wineryName: wineryName,
                     wine: wine.name,
                     price: wine.price,
                     link: wine.link
@@ -175,10 +165,7 @@ const executeCrossWinerySearch = async (variety: string, maxPrice?: number, dist
         });
     });
 
-    return { 
-        searchedWineries: selectedWineries.map(w => w.name),
-        matches: allWines 
-    };
+    return { searchedWineries: selectedWineries.map(w => w.name), matches: allWines };
 };
 
 export const generateWineryDescription = async (wineryName: string, features: string[]): Promise<string> => {
@@ -206,64 +193,34 @@ export interface WineSearchResponse {
 
 export const searchWinesForSale = async (wineryName: string, shopUrl?: string, filterVariety?: string): Promise<WineSearchResponse> => {
   try {
-    let specificInstruction = "";
-    
-    if (shopUrl) {
-        specificInstruction = `IMPORTANT: Start your search at the official shop page: ${shopUrl}. 
-        Prioritize extracting wines visible on this page. 
-        If direct product links are not clearly available or likely to 404, use ${shopUrl} as the link.`;
-    } else {
-        specificInstruction = `Search for the official "Shop" or "Buy Wines" page for ${wineryName}.`;
-    }
-    
-    // Instructions for specific wineries to prevent 404s
-    if (wineryName.includes("Eden Road")) {
-        specificInstruction += ` For Eden Road Wines, strictly use https://edenroadwines.com.au/pages/shop as the source.`;
-    }
-    if (wineryName.includes("Collector Wines")) {
-        specificInstruction += ` For Collector Wines, strictly use https://collectorwines.com.au/collections/explore-our-range as the source.`;
-    }
-    if (wineryName.includes("Mount Majura")) {
-        specificInstruction += ` For Mount Majura Vineyard, strictly use https://www.mountmajura.com.au/wines/current-releases/ as the source.`;
-    }
-    if (wineryName.includes("Contentious Character")) {
-        specificInstruction += ` For Contentious Character, strictly use https://www.contentiouscharacter.com.au/Wines as the source.`;
-    }
-    if (wineryName.includes("Dionysus")) {
-        specificInstruction += ` For Dionysus Winery, strictly use https://www.dionysus-winery.com.au/category/all-products as the source.`;
-    }
-    if (wineryName.includes("Pankhurst")) {
-        specificInstruction += ` For Pankhurst Wines, strictly use https://pankhurstwines.com.au/shop-2/ as the source.`;
-    }
-    if (wineryName.includes("Vintner's Daughter")) {
-        specificInstruction += ` For The Vintner's Daughter, strictly use https://thevintnersdaughter.com.au/shop/ as the source.`;
-    }
-    if (wineryName.includes("McKellar Ridge")) {
-        specificInstruction += ` For McKellar Ridge Wines, strictly use https://www.mckellarridgewines.com.au/buy/wine as the source.`;
-    }
+    // FALLBACK: If no specific shop URL is known, default to a Google Search
+    const safeShopUrl = shopUrl || `https://www.google.com/search?q=${encodeURIComponent(wineryName + ' wines buy')}`;
 
-    // Determine what we are searching for
-    const wineTarget = filterVariety ? `${filterVariety} wines` : 'wines';
+    // Customize prompt based on whether we are filtering for a specific variety
+    const varietyPrompt = filterVariety && filterVariety.toLowerCase() !== 'any' 
+        ? `specifically ${filterVariety} wines` 
+        : "current wines";
 
     const response = await ai.models.generateContent({
       model: modelName,
-      contents: `Find 5 current ${wineTarget} available for purchase from ${wineryName} in the Canberra District wine region. 
-      ${specificInstruction}
+      contents: `Find 5 ${varietyPrompt} available for purchase from ${wineryName} in the Canberra District wine region.
+      
+      IMPORTANT - URL SAFETY RULES:
+      1. You are searching for wines listed on this specific store page: ${safeShopUrl}
+      2. If you see a specific product link (like ".../product/2023-shiraz") in the search results, use it.
+      3. CRITICAL: If you CANNOT confirm the specific product link exists, you MUST return the main shop URL: ${safeShopUrl}
+      4. DO NOT guess or construct deep links (e.g. do not guess ".../2022-vintage" if you didn't see it). 
+      5. It is better to link to the main store page than to send the user to a 404 error.
 
-      For each wine, provide the full name, price, and a functioning URL to the purchase page.
-      
-      CRITICAL LINK VALIDATION:
-      - Double check the links. Ensure they do not give a 404 error.
-      - If a direct link to a specific vintage page (e.g., /2021-shiraz) is likely to be broken, outdated, or result in a 404, YOU MUST provide the URL to the winery's main "Shop", "Our Wines", or "Current Vintages" page instead.
-      
       Format each entry on a new line strictly following this pattern:
       Wine Name | Price | URL
       
       Example:
-      2023 Estate Shiraz | $42.00 | https://winery-name.com/shop
+      2023 Estate Shiraz | $42.00 | ${safeShopUrl}
+      2024 Riesling | $35.00 | https://winery.com/product/riesling-24
       
       If a price is not found, write "Price N/A".
-      Do not include any bullet points, numbering, or intro/outro text. Only the list lines.`,
+      Only output the list lines.`,
       config: {
         tools: [{ googleSearch: {} }],
       },
@@ -273,7 +230,6 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string, f
     const wines: WineListing[] = [];
     const sources: { title: string; uri: string }[] = [];
     
-    // Parse text
     const lines = text.split('\n');
     lines.forEach(line => {
       if (!line.trim()) return;
@@ -290,12 +246,18 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string, f
         }
         link = link.replace(/[.,;)]+$/, '');
 
-        if (name && link) {
+        // FINAL SAFETY CHECK: If the link is empty or invalid, force the shopUrl
+        if (!link || !link.startsWith('http')) {
+            link = safeShopUrl;
+        }
+
+        if (name) {
              wines.push({ name, price, link });
         }
       }
     });
 
+    // Capture sources for citation if needed
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     if (chunks) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -306,17 +268,16 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string, f
       });
     }
 
+    // Fallback if formatting failed entirely
     if (wines.length === 0 && text.trim().length > 0) {
-         const fallbackUrl = shopUrl || (sources.length > 0 ? sources[0].uri : `https://www.google.com/search?q=${encodeURIComponent(wineryName + ' wines buy')}`);
          const fallbackLines = text.split('\n').filter(l => l.trim().length > 0);
-         
          fallbackLines.forEach(line => {
              const cleanLine = line.replace(/^[*\-•\d.]+\s*/, '').trim();
              if (cleanLine.length > 5) {
                  wines.push({
                      name: cleanLine,
                      price: '',
-                     link: fallbackUrl
+                     link: safeShopUrl
                  });
              }
          });
@@ -325,9 +286,6 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string, f
     return { wines, sources };
   } catch (error) {
     console.error("Wine search error:", error);
-    return { 
-      wines: [], 
-      sources: [] 
-    };
+    return { wines: [], sources: [] };
   }
 };
