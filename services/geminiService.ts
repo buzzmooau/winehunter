@@ -101,7 +101,11 @@ const executeCrossWinerySearch = async (variety: string, maxPrice?: number, dist
     // Select up to 3 wineries to manage latency
     const selectedWineries = candidates.sort(() => 0.5 - Math.random()).slice(0, 3);
 
-    if (selectedWineries.length === 0) return { message: "No wineries found known for that variety." };
+    // FIX: Always return the expected object structure, even if empty.
+    // This prevents the "cannot access property 'length' of undefined" error in the UI.
+    if (selectedWineries.length === 0) {
+        return { searchedWineries: [], matches: [] };
+    }
 
     const searchPromises = selectedWineries.map(w => searchWinesForSale(w.name, w.shopUrl));
     const results = await Promise.all(searchPromises);
@@ -284,6 +288,3 @@ const fetchWinesFromApi = async (wineryName: string, shopUrl?: string): Promise<
     return { wines: [], sources: [] };
   }
 };
-
-// Export Alias to fix import errors
-export const smartWineSearch = searchWinesForSale;
