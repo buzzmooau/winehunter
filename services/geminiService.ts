@@ -4,6 +4,10 @@ import { INITIAL_INSTRUCTION, WINERIES } from '../constants';
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const modelName = 'gemini-2.5-flash';
 
+// --- Configuration ---
+const CACHE_DURATION_MS = 48 * 60 * 60 * 1000; // 48 Hours
+const CACHE_PREFIX = 'wine_cache_v1_';
+
 // --- Tool Definitions ---
 
 const wineSearchTool: FunctionDeclaration = {
@@ -143,11 +147,53 @@ export interface WineListing {
 export interface WineSearchResponse {
   wines: WineListing[];
   sources: { title: string; uri: string }[];
+  cached?: boolean; // Flag to indicate if data came from cache
 }
 
+// CACHING LOGIC WRAPPER
 export const searchWinesForSale = async (wineryName: string, shopUrl?: string): Promise<WineSearchResponse> => {
+  const cacheKey = `${CACHE_PREFIX}${wineryName.replace(/\s+/g, '_').toLowerCase()}`;
+  
+  // 1. Try to fetch from Cache
   try {
-    // FALLBACK: If no specific shop URL is known, default to a Google Search
+      const cachedData = localStorage.getItem(cacheKey);
+      if (cachedData) {
+          const parsed = JSON.parse(cachedData);
+          const age = Date.now() - parsed.timestamp;
+          
+          if (age < CACHE_DURATION_MS) {
+              console.log(`[Cache Hit] Serving wines for ${wineryName} from storage.`);
+              return { ...parsed.data, cached: true };
+          } else {
+              console.log(`[Cache Expired] Refreshing data for ${wineryName}.`);
+              localStorage.removeItem(cacheKey);
+          }
+      }
+  } catch (e) {
+      console.warn("Cache access failed", e);
+  }
+
+  // 2. Perform Fetch (if cache miss)
+  const result = await fetchWinesFromApi(wineryName, shopUrl);
+
+  // 3. Save to Cache (if results found)
+  if (result.wines.length > 0) {
+      try {
+          localStorage.setItem(cacheKey, JSON.stringify({
+              timestamp: Date.now(),
+              data: result
+          }));
+      } catch (e) {
+          console.warn("Cache write failed", e);
+      }
+  }
+
+  return result;
+};
+
+// THE ACTUAL API CALL (Moved to separate internal function)
+const fetchWinesFromApi = async (wineryName: string, shopUrl?: string): Promise<WineSearchResponse> => {
+  try {
     const safeShopUrl = shopUrl || `https://www.google.com/search?q=${encodeURIComponent(wineryName + ' wines buy')}`;
 
     const response = await ai.models.generateContent({
@@ -195,7 +241,7 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string): 
         }
         link = link.replace(/[.,;)]+$/, '');
 
-        // FINAL SAFETY CHECK: If the link is empty or invalid, force the shopUrl
+        // FINAL SAFETY CHECK
         if (!link || !link.startsWith('http')) {
             link = safeShopUrl;
         }
@@ -206,7 +252,7 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string): 
       }
     });
 
-    // Capture sources for citation if needed
+    // Capture sources
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     if (chunks) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -217,7 +263,7 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string): 
       });
     }
 
-    // Fallback if formatting failed entirely
+    // Fallback
     if (wines.length === 0 && text.trim().length > 0) {
          const fallbackLines = text.split('\n').filter(l => l.trim().length > 0);
          fallbackLines.forEach(line => {
@@ -239,5 +285,5 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string): 
   }
 };
 
-// Export Alias to fix import errors in components expecting 'smartWineSearch'
+// Export Alias to fix import errors
 export const smartWineSearch = searchWinesForSale;
