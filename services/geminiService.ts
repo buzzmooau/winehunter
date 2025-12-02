@@ -1,4 +1,4 @@
-import { GoogleGenAI, Chat, GenerateContentResponse, FunctionDeclaration, Type, Schema } from "@google/genai";
+import { GoogleGenAI, Chat, FunctionDeclaration, Type } from "@google/genai";
 import { INITIAL_INSTRUCTION, WINERIES } from '../constants';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -83,58 +83,13 @@ export const createSommelierSession = (): ChatSession => {
   };
 };
 
-// --- Smart Search (Natural Language to Structured Search) ---
-
-export const smartWineSearch = async (query: string) => {
-    try {
-        // 1. Parse natural language query into structured criteria
-        const parsingResponse = await ai.models.generateContent({
-            model: modelName,
-            contents: `Analyze this wine search query: "${query}". 
-            Extract the grape variety (e.g. Shiraz, Riesling), maximum price (if mentioned), and district (if mentioned).
-            Return a JSON object with keys: variety (string, required, infer if implied), maxPrice (number, optional), district (string, optional).
-            If no variety is mentioned, default to "Any".`,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        variety: { type: Type.STRING },
-                        maxPrice: { type: Type.NUMBER },
-                        district: { type: Type.STRING }
-                    }
-                }
-            }
-        });
-
-        const criteria = JSON.parse(parsingResponse.text || "{}");
-        const variety = criteria.variety || "Any";
-        const maxPrice = criteria.maxPrice;
-        const district = criteria.district;
-
-        // 2. Execute Search
-        return await executeCrossWinerySearch(variety, maxPrice, district);
-
-    } catch (e) {
-        console.error("Smart search failed", e);
-        return { searchedWineries: [], matches: [] };
-    }
-};
-
-
 // --- Helper Functions ---
 
 const executeCrossWinerySearch = async (variety: string, maxPrice?: number, district?: string) => {
-    let candidates = WINERIES;
+    let candidates = WINERIES.filter(w => 
+        w.varieties.some(v => v.toLowerCase().includes(variety.toLowerCase()))
+    );
 
-    // Filter by Variety (if specific)
-    if (variety && variety.toLowerCase() !== 'any') {
-        candidates = candidates.filter(w => 
-            w.varieties.some(v => v.toLowerCase().includes(variety.toLowerCase()))
-        );
-    }
-
-    // Filter by District
     if (district) {
         candidates = candidates.filter(w => w.district.toLowerCase() === district.toLowerCase());
     }
@@ -142,10 +97,9 @@ const executeCrossWinerySearch = async (variety: string, maxPrice?: number, dist
     // Select up to 3 wineries to manage latency
     const selectedWineries = candidates.sort(() => 0.5 - Math.random()).slice(0, 3);
 
-    if (selectedWineries.length === 0) return { searchedWineries: [], matches: [] };
+    if (selectedWineries.length === 0) return { message: "No wineries found known for that variety." };
 
-    // Pass the specific variety filter to the individual winery search to get relevant results
-    const searchPromises = selectedWineries.map(w => searchWinesForSale(w.name, w.shopUrl, variety));
+    const searchPromises = selectedWineries.map(w => searchWinesForSale(w.name, w.shopUrl));
     const results = await Promise.all(searchPromises);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,7 +110,7 @@ const executeCrossWinerySearch = async (variety: string, maxPrice?: number, dist
             const priceVal = parseFloat(wine.price.replace(/[^0-9.]/g, ''));
             if (!maxPrice || (!isNaN(priceVal) && priceVal <= maxPrice)) {
                 allWines.push({
-                    wineryName: wineryName,
+                    winery: wineryName,
                     wine: wine.name,
                     price: wine.price,
                     link: wine.link
@@ -191,19 +145,14 @@ export interface WineSearchResponse {
   sources: { title: string; uri: string }[];
 }
 
-export const searchWinesForSale = async (wineryName: string, shopUrl?: string, filterVariety?: string): Promise<WineSearchResponse> => {
+export const searchWinesForSale = async (wineryName: string, shopUrl?: string): Promise<WineSearchResponse> => {
   try {
     // FALLBACK: If no specific shop URL is known, default to a Google Search
     const safeShopUrl = shopUrl || `https://www.google.com/search?q=${encodeURIComponent(wineryName + ' wines buy')}`;
 
-    // Customize prompt based on whether we are filtering for a specific variety
-    const varietyPrompt = filterVariety && filterVariety.toLowerCase() !== 'any' 
-        ? `specifically ${filterVariety} wines` 
-        : "current wines";
-
     const response = await ai.models.generateContent({
       model: modelName,
-      contents: `Find 5 ${varietyPrompt} available for purchase from ${wineryName} in the Canberra District wine region.
+      contents: `Find 5 current wines available for purchase from ${wineryName} in the Canberra District wine region.
       
       IMPORTANT - URL SAFETY RULES:
       1. You are searching for wines listed on this specific store page: ${safeShopUrl}
@@ -289,3 +238,6 @@ export const searchWinesForSale = async (wineryName: string, shopUrl?: string, f
     return { wines: [], sources: [] };
   }
 };
+
+// Export Alias to fix import errors in components expecting 'smartWineSearch'
+export const smartWineSearch = searchWinesForSale;
